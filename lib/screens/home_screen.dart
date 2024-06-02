@@ -17,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text("Talkie"),
         actions: [
           //search user button
-          IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.search_sharp)),
 
           //more feature button
           IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
