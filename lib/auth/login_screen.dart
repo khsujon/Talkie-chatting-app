@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:talkie/main.dart';
+import 'package:talkie/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,6 +10,16 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool _isAnimate = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(milliseconds: 500), () {
+      _isAnimate = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     mq = MediaQuery.of(context).size;
@@ -23,10 +34,11 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Stack(
         children: [
-          Positioned(
+          AnimatedPositioned(
               top: mq.height * .15,
               width: mq.width * .5,
-              left: mq.width * .25,
+              left: _isAnimate ? mq.width * .25 : -mq.width * .5,
+              duration: Duration(seconds: 1),
               child: Image.asset("images/appIcon.png")),
           Positioned(
               bottom: mq.height * .15,
@@ -39,7 +51,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     shape: StadiumBorder(),
                     elevation: 1,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (_) => HomeScreen()));
+                  },
                   icon: Image.asset(
                     "images/google.png",
                     height: mq.height * .03,
@@ -50,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         text: TextSpan(
                             style: TextStyle(color: Colors.black, fontSize: 16),
                             children: [
-                          TextSpan(text: 'Sign In with '),
+                          TextSpan(text: 'Login with '),
                           TextSpan(
                               text: "Google",
                               style: TextStyle(
