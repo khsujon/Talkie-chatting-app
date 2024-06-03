@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:talkie/screens/home_screen.dart';
+import 'package:talkie/auth/login_screen.dart';
+//import 'package:talkie/screens/home_screen.dart';
+
+//global object for accessing device screen size
+late Size mq;
 
 void main() {
   runApp(const MyApp());
@@ -24,6 +28,6 @@ class MyApp extends StatelessWidget {
               fontSize: 19),
           backgroundColor: Colors.white54,
         )),
-        home: HomeScreen());
+        home: LoginScreen());
   }
 }
