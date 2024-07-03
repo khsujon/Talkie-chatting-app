@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:talkie/auth/login_screen.dart';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 //import 'package:talkie/screens/home_screen.dart';
 
 //global object for accessing device screen size
 late Size mq;
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  _initializeFirebase();
   runApp(const MyApp());
 }
 
@@ -30,4 +35,8 @@ class MyApp extends StatelessWidget {
         )),
         home: LoginScreen());
   }
+}
+
+_initializeFirebase() async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
