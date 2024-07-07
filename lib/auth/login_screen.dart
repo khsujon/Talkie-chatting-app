@@ -16,13 +16,15 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     Future.delayed(Duration(milliseconds: 500), () {
-      _isAnimate = true;
+      setState(() {
+        _isAnimate = true;
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    mq = MediaQuery.of(context).size;
+    //mq = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(

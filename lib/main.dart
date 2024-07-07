@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:talkie/auth/login_screen.dart';
+//import 'package:talkie/auth/login_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:talkie/screens/splash_screen.dart';
 import 'firebase_options.dart';
 //import 'package:talkie/screens/home_screen.dart';
 
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
               fontSize: 19),
           backgroundColor: Colors.white54,
         )),
-        home: LoginScreen());
+        home: SplashScreen());
   }
 }
 
