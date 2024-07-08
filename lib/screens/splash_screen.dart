@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:talkie/auth/login_screen.dart';
 import 'package:talkie/main.dart';
-import 'package:talkie/screens/home_screen.dart';
+//import 'package:talkie/screens/home_screen.dart';
 
 //splash screen
 class SplashScreen extends StatefulWidget {
@@ -23,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
       //Navigate to home Screen
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+          context, MaterialPageRoute(builder: (_) => const LoginScreen()));
     });
   }
 

@@ -63,6 +63,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '645660236925',
     projectId: 'talkie-a355f',
     storageBucket: 'talkie-a355f.appspot.com',
+    androidClientId: '645660236925-sjp34k91mibt2g3gpupfm7alput0f0h9.apps.googleusercontent.com',
+    iosClientId: '645660236925-6ltqnmrk1vohpjf7qlquck3nc2r85513.apps.googleusercontent.com',
     iosBundleId: 'com.example.talkie',
   );
+
 }

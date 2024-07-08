@@ -22,6 +22,12 @@ dependencies:
   #for firebase integrating
   firebase_core: ^2.27.0
 
+  #for firebase authentication
+  firebase_auth: ^4.17.8
+  
+  #for google sign in
+  google_sign_in: ^6.2.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
