@@ -28,8 +28,11 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+//Google login Button Functionalities
   _handleGoogleBtnClick() {
+    Dialogs.showProgressBar(context);
     _signInWithGoogle().then((user) {
+      Navigator.pop(context);
       if (user != null) {
         log('\nUser : ${user.user}');
         Navigator.pushReplacement(
@@ -58,7 +61,8 @@ class _LoginScreenState extends State<LoginScreen> {
       return await FirebaseAuth.instance.signInWithCredential(credential);
     } catch (e) {
       log('\n_signInWithGoogle: $e');
-      Dialogs.showsnackbar(context, "Something Went Wrong (check internet!)");
+      Dialogs.showsnackbar(
+          context, "Something Went Wrong (Check Internet Connection!)");
       return null;
     }
   }

@@ -1,7 +1,12 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:talkie/auth/login_screen.dart';
 import 'package:talkie/main.dart';
+import 'package:talkie/screens/home_screen.dart';
 //import 'package:talkie/screens/home_screen.dart';
 
 //splash screen
@@ -22,9 +27,16 @@ class _SplashScreenState extends State<SplashScreen> {
       SystemChrome.setSystemUIOverlayStyle(
           SystemUiOverlayStyle(statusBarColor: Colors.transparent));
 
-      //Navigate to home Screen
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+      if (FirebaseAuth.instance.currentUser != null) {
+        log('\nUser : ${FirebaseAuth.instance.currentUser}');
+        //Navigate to home Screen
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+      } else {
+        //Navigate to home Screen
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+      }
     });
   }
 
