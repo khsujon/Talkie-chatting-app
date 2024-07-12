@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:talkie/main.dart';
+import 'package:talkie/widgets/chat_user_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -32,6 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Icon(Icons.add_comment_rounded),
         ),
       ),
+
+      body: ListView.builder(
+          padding: EdgeInsets.only(top: mq.height * .01),
+          physics: BouncingScrollPhysics(),
+          itemCount: 18,
+          itemBuilder: ((context, index) {
+            return ChatUserCard();
+          })),
     );
   }
 }

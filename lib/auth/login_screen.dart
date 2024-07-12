@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:talkie/api/apis.dart';
 import 'package:talkie/helper/dialogue.dart';
 import 'package:talkie/main.dart';
 import 'package:talkie/screens/home_screen.dart';
@@ -58,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       // Once signed in, return the UserCredential
-      return await FirebaseAuth.instance.signInWithCredential(credential);
+      return await APIs.auth.signInWithCredential(credential);
     } catch (e) {
       log('\n_signInWithGoogle: $e');
       Dialogs.showsnackbar(
