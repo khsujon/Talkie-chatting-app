@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:talkie/api/apis.dart';
 import 'package:talkie/main.dart';
 import 'package:talkie/models/chat_user.dart';
@@ -34,7 +35,10 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 20),
         child: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () async {
+            await APIs.auth.signOut();
+            await GoogleSignIn().signOut();
+          },
           child: Icon(Icons.add_comment_rounded),
         ),
       ),
