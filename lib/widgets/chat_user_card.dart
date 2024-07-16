@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:talkie/main.dart';
@@ -25,10 +26,18 @@ class _ChatUserCardState extends State<ChatUserCard> {
         onTap: () {},
         child: ListTile(
           //User Profile Picture
-          leading: CircleAvatar(
-              child: Icon(
-            CupertinoIcons.person,
-          )),
+          //leading: CircleAvatar(child: Icon(CupertinoIcons.person)),
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(mq.height * 0.3),
+            child: CachedNetworkImage(
+              height: mq.height * 0.055,
+              width: mq.height * 0.055,
+              imageUrl: widget.user.image,
+              //placeholder: (context, url) => CircularProgressIndicator(),
+              errorWidget: (context, url, error) =>
+                  CircleAvatar(child: Icon(CupertinoIcons.person)),
+            ),
+          ),
 
           //User Name
           title: Text(widget.user.name),
@@ -37,11 +46,17 @@ class _ChatUserCardState extends State<ChatUserCard> {
           subtitle: Text(widget.user.about, maxLines: 1),
 
           //last message time
-          trailing: Text(
-            '12:00 PM',
-            style: TextStyle(
-              color: Colors.black45,
-            ),
+          // trailing: Text(
+          //   '12:00 PM',
+          //   style: TextStyle(
+          //     color: Colors.black45,
+          //   ),
+          trailing: Container(
+            height: 10,
+            width: 10,
+            decoration: BoxDecoration(
+                color: Colors.green.shade600,
+                borderRadius: BorderRadius.circular(7)),
           ),
         ),
       ),

@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
           elevation: 3,
           iconTheme: IconThemeData(color: Color.fromARGB(255, 48, 148, 230)),
           titleTextStyle: TextStyle(
-              color: Colors.greenAccent,
+              color: Colors.green.shade600,
               fontWeight: FontWeight.w700,
               fontSize: 19),
           backgroundColor: Colors.white54,
