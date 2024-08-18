@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (user != null) {
         log('\nUser : ${user.user}');
 
-        if ((await APIs.userExists())) {
+        if ((await APIs.getSelfInfo())) {
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (_) => HomeScreen()));
         } else {
