@@ -15,7 +15,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<ChatUser> list = [];
+  List<ChatUser> _list = [];
+
+  final List<ChatUser> _searchList = [];
+  bool _isSearched = false;
 
   @override
   void initState() {
@@ -28,10 +31,41 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: Icon(CupertinoIcons.home),
-        title: const Text("Talkie"),
+        title: _isSearched
+            ? TextField(
+                decoration: InputDecoration(
+                    border: InputBorder.none, hintText: 'Name, Email, ...'),
+                autofocus: true,
+                style: TextStyle(fontSize: 18, letterSpacing: 0.5),
+
+                //update search list
+                onChanged: (val) {
+                  //search logic
+                  _searchList.clear();
+
+                  for (var i in _list) {
+                    if (i.name.toLowerCase().contains(val.toLowerCase()) ||
+                        i.email.toLowerCase().contains(val.toLowerCase())) {
+                      _searchList.add(i);
+                    }
+                    setState(() {
+                      _searchList;
+                    });
+                  }
+                },
+              )
+            : Text("Talkie"),
         actions: [
           //search user button
-          IconButton(onPressed: () {}, icon: Icon(Icons.search_sharp)),
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  _isSearched = !_isSearched;
+                });
+              },
+              icon: Icon(_isSearched
+                  ? CupertinoIcons.clear_circled_solid
+                  : Icons.search_sharp)),
 
           //more feature button
           IconButton(
@@ -72,16 +106,16 @@ class _HomeScreenState extends State<HomeScreen> {
             case ConnectionState.active:
             case ConnectionState.done:
               final data = snapshot.data?.docs;
-              list =
+              _list =
                   data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
-              if (list.isNotEmpty) {
+              if (_list.isNotEmpty) {
                 return (ListView.builder(
                     padding: EdgeInsets.only(top: mq.height * .01),
                     physics: BouncingScrollPhysics(),
-                    itemCount: list.length,
+                    itemCount: _isSearched ? _searchList.length : _list.length,
                     itemBuilder: (context, index) {
                       return ChatUserCard(
-                        user: list[index],
+                        user: _isSearched ? _searchList[index] : _list[index],
                       );
                       // return Text("Name: ${list[index]}");
                     }));
