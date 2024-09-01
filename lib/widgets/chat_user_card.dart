@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:talkie/main.dart';
 
 import '../models/chat_user.dart';
+import '../screens/chat_screen.dart';
 
 class ChatUserCard extends StatefulWidget {
   final ChatUser user;
@@ -23,7 +24,14 @@ class _ChatUserCardState extends State<ChatUserCard> {
       //color: Colors.green.shade100,
       elevation: 0.5,
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => ChatScreen(
+                        user: widget.user,
+                      )));
+        },
         child: ListTile(
           //User Profile Picture
           //leading: CircleAvatar(child: Icon(CupertinoIcons.person)),

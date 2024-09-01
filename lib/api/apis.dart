@@ -72,21 +72,29 @@ class APIs {
   }
 
   //update profile picture
-  static Future updateProfilePicture(File file) async {
-    final ext = file.path.split('.').last;
-    final ref = storage.ref().child('profile_picture/${user.uid}.$ext');
+  static Future<void> updateProfilePicture(File file) async {
+    try {
+      // Get the file extension (e.g., jpg, png)
+      final ext = file.path.split('.').last;
+      log('Extension: $ext');
 
-    //uploading image
-    await ref
-        .putFile(file, SettableMetadata(contentType: 'image/$ext'))
-        .then((p0) {
-      log('Data Transferred : ${p0.bytesTransferred / 1000} kb');
-    });
+      // Create a reference to the profile_picture directory with the user's UID
+      final ref = storage.ref().child('profile_picture/${user.uid}.$ext');
 
-    //updating image data in firestore
-    me.image = await ref.getDownloadURL();
-    await firestore.collection('users').doc(user.uid).update({
-      'image': me.image,
-    });
+      // Upload the file to Firebase Storage
+      await ref.putFile(file);
+
+      // Retrieve the download URL after the file has been uploaded
+      me.image = await ref.getDownloadURL();
+
+      // Update the user's image URL in Firestore
+      await firestore.collection('users').doc(user.uid).update({
+        'image': me.image,
+      });
+
+      log('Profile picture updated successfully');
+    } catch (e) {
+      log('Failed to upload profile picture: $e');
+    }
   }
 }
