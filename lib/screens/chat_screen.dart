@@ -23,6 +23,8 @@ class _ChatScreenState extends State<ChatScreen> {
   //for storing all messages
   List<Message> _list = [];
 
+  final _textController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -35,7 +37,7 @@ class _ChatScreenState extends State<ChatScreen> {
         body: Column(children: [
           Expanded(
             child: StreamBuilder(
-              stream: APIs.getAllMessages(),
+              stream: APIs.getAllMessages(widget.user),
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   //if data is loading
@@ -49,26 +51,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   case ConnectionState.active:
                   case ConnectionState.done:
                     final data = snapshot.data?.docs;
-                    print('Data: ${jsonEncode(data![0].data())}');
-                    // _list =
-                    //     data?.map((e) => ChatUser.fromJson(e.data())).toList() ??
-                    //         [];
-                    _list.clear();
-                    _list.add(Message(
-                        toId: 'xyz',
-                        msg: 'Hii',
-                        read: '',
-                        type: Type.text,
-                        fromId: APIs.user.uid,
-                        sent: '12:00 AM'));
 
-                    _list.add(Message(
-                        toId: APIs.user.uid,
-                        msg: 'Hello',
-                        read: '',
-                        type: Type.text,
-                        fromId: 'xyz',
-                        sent: '12:50 AM'));
+                    _list =
+                        data?.map((e) => Message.fromJson(e.data())).toList() ??
+                            [];
+
                     if (_list.isNotEmpty) {
                       return (ListView.builder(
                           padding: EdgeInsets.only(top: mq.height * .01),
@@ -179,6 +166,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   //Send message text field
                   Expanded(
                       child: TextField(
+                    controller: _textController,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     decoration: InputDecoration(
@@ -215,7 +203,12 @@ class _ChatScreenState extends State<ChatScreen> {
           //send Button
 
           MaterialButton(
-            onPressed: () {},
+            onPressed: () {
+              if (_textController.text.isNotEmpty) {
+                APIs.sendMessage(widget.user, _textController.text);
+                _textController.text = "";
+              }
+            },
             minWidth: 0,
             padding: EdgeInsets.only(top: 10, bottom: 10, right: 5, left: 10),
             shape: CircleBorder(),

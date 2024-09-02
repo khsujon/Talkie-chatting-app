@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:talkie/models/chat_user.dart';
+import 'package:talkie/models/message.dart';
 
 class APIs {
   //for authentication
@@ -100,8 +101,36 @@ class APIs {
 
   //**********Chat Screen Related APIs **********/
 
+  //getting conversation id
+  static String getConversationId(String id) => user.uid.hashCode <= id.hashCode
+      ? '${user.uid}_$id'
+      : '${id}_${user.uid}';
+
   //for getting all messages of a specific conversation from firestore
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages() {
-    return firestore.collection('messages').snapshots();
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(
+      ChatUser user) {
+    return firestore
+        .collection('chats/${getConversationId(user.id)}/messages/')
+        .snapshots();
+  }
+
+  //for sending message
+  static Future sendMessage(ChatUser chatUser, String msg) async {
+    //message sending time(use as id also)
+    final time = DateTime.now().millisecondsSinceEpoch.toString();
+
+    //message to send
+    final Message message = Message(
+        toId: chatUser.id,
+        msg: msg,
+        read: "",
+        type: Type.text,
+        fromId: user.uid,
+        sent: time);
+
+    final ref = firestore
+        .collection('chats/${getConversationId(chatUser.id)}/messages/');
+
+    await ref.doc(time).set(message.toJson());
   }
 }
