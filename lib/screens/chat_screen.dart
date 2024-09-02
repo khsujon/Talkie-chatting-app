@@ -1,9 +1,15 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:talkie/api/apis.dart';
 import 'package:talkie/models/chat_user.dart';
+import 'package:talkie/widgets/message_card.dart';
 
 import '../main.dart';
+import '../models/message.dart';
 
 class ChatScreen extends StatefulWidget {
   final ChatUser user;
@@ -14,6 +20,9 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  //for storing all messages
+  List<Message> _list = [];
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -22,6 +31,70 @@ class _ChatScreenState extends State<ChatScreen> {
           automaticallyImplyLeading: false,
           flexibleSpace: _appBar(),
         ),
+        backgroundColor: Colors.green.shade100,
+        body: Column(children: [
+          Expanded(
+            child: StreamBuilder(
+              stream: APIs.getAllMessages(),
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  //if data is loading
+                  case ConnectionState.waiting:
+                  case ConnectionState.none:
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+
+                  //if some or all data is loaded then show
+                  case ConnectionState.active:
+                  case ConnectionState.done:
+                    final data = snapshot.data?.docs;
+                    print('Data: ${jsonEncode(data![0].data())}');
+                    // _list =
+                    //     data?.map((e) => ChatUser.fromJson(e.data())).toList() ??
+                    //         [];
+                    _list.clear();
+                    _list.add(Message(
+                        toId: 'xyz',
+                        msg: 'Hii',
+                        read: '',
+                        type: Type.text,
+                        fromId: APIs.user.uid,
+                        sent: '12:00 AM'));
+
+                    _list.add(Message(
+                        toId: APIs.user.uid,
+                        msg: 'Hello',
+                        read: '',
+                        type: Type.text,
+                        fromId: 'xyz',
+                        sent: '12:50 AM'));
+                    if (_list.isNotEmpty) {
+                      return (ListView.builder(
+                          padding: EdgeInsets.only(top: mq.height * .01),
+                          physics: BouncingScrollPhysics(),
+                          itemCount: _list.length,
+                          itemBuilder: (context, index) {
+                            return MessageCard(
+                              message: _list[index],
+                            );
+                          }));
+                    } else {
+                      return Center(
+                          child: Text(
+                        "Say Hii! 👋",
+                        style: TextStyle(
+                            fontSize: 20, color: Colors.green.shade600),
+                      ));
+                    }
+                }
+              },
+            ),
+          ),
+
+          //Chat input bar
+          _chatInput(),
+        ]),
       ),
     );
   }
@@ -77,10 +150,81 @@ class _ChatScreenState extends State<ChatScreen> {
                 'Last seen unavailable',
                 style: TextStyle(
                     fontSize: 13,
-                    fontWeight: FontWeight.w300,
+                    fontWeight: FontWeight.w400,
                     color: Colors.black54),
               ),
             ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _chatInput() {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+          vertical: mq.height * 0.01, horizontal: mq.width * 0.025),
+      child: Row(
+        children: [
+          Expanded(
+            child: Card(
+              child: Row(
+                children: [
+                  //Emoji Button
+                  IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.emoji_emotions,
+                          color: Colors.blueAccent, size: 26)),
+
+                  //Send message text field
+                  Expanded(
+                      child: TextField(
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    decoration: InputDecoration(
+                        hintText: 'Type your message...',
+                        hintStyle: TextStyle(
+                            color: Colors.blueAccent.shade100, fontSize: 15),
+                        border: InputBorder.none),
+                  )),
+
+                  //Image from gallery
+                  IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.image,
+                        color: Colors.blueAccent,
+                        size: 26,
+                      )),
+                  //Image from Camera
+                  IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.camera_alt_rounded,
+                        color: Colors.blueAccent,
+                        size: 26,
+                      )),
+                  SizedBox(
+                    width: mq.width * 0.02,
+                  )
+                ],
+              ),
+            ),
+          ),
+
+          //send Button
+
+          MaterialButton(
+            onPressed: () {},
+            minWidth: 0,
+            padding: EdgeInsets.only(top: 10, bottom: 10, right: 5, left: 10),
+            shape: CircleBorder(),
+            color: Colors.green,
+            child: Icon(
+              Icons.send,
+              color: Colors.white,
+              size: 28,
+            ),
           )
         ],
       ),

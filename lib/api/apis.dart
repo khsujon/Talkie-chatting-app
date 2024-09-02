@@ -97,4 +97,11 @@ class APIs {
       log('Failed to upload profile picture: $e');
     }
   }
+
+  //**********Chat Screen Related APIs **********/
+
+  //for getting all messages of a specific conversation from firestore
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages() {
+    return firestore.collection('messages').snapshots();
+  }
 }
