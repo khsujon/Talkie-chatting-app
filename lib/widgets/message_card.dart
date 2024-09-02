@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:talkie/api/apis.dart';
+import 'package:talkie/helper/my_date_util.dart';
 import 'package:talkie/main.dart';
 import 'package:talkie/models/message.dart';
 
@@ -22,6 +23,11 @@ class _MessageCardState extends State<MessageCard> {
 
   //sender message
   Widget _blueMessage() {
+    //Update last read message
+    if (widget.message.read.isEmpty) {
+      APIs.updateMessageReadStatus(widget.message);
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -52,7 +58,8 @@ class _MessageCardState extends State<MessageCard> {
         Padding(
           padding: EdgeInsets.only(right: mq.width * 0.04),
           child: Text(
-            widget.message.sent,
+            MyDateUtil.getFormatedTime(
+                context: context, time: widget.message.sent),
             style: TextStyle(fontSize: 13, color: Colors.black54),
           ),
         )
@@ -72,20 +79,18 @@ class _MessageCardState extends State<MessageCard> {
               width: mq.width * .04,
             ),
             //Double tick blue icon for message read
-            Icon(
-              Icons.done_all_rounded,
-              color: Colors.blue,
-              size: 20,
-            ),
+            if (widget.message.read.isNotEmpty)
+              Icon(Icons.done_all_rounded, color: Colors.blue, size: 20),
 
             //for add space
             SizedBox(
               width: 2,
             ),
 
-            //read time
+            //sent time
             Text(
-              widget.message.read + '12:45',
+              MyDateUtil.getFormatedTime(
+                  context: context, time: widget.message.sent),
               style: TextStyle(fontSize: 13, color: Colors.black54),
             ),
           ],
