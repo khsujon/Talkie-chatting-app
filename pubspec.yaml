@@ -40,7 +40,8 @@ dependencies:
   firebase_storage: ^11.6.9
 
   #for emoji pick
-  emoji_picker_flutter: 
+  emoji_picker_flutter: ^1.0.9
+ 
 
 
 dev_dependencies:
