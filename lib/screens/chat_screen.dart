@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:talkie/api/apis.dart';
 import 'package:talkie/models/chat_user.dart';
 import 'package:talkie/widgets/message_card.dart';
@@ -280,7 +281,16 @@ class _ChatScreenState extends State<ChatScreen> {
                       )),
                   // Image from Camera
                   IconButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        final ImagePicker picker = ImagePicker();
+                        // Pick an image.
+                        final XFile? image = await picker.pickImage(
+                            source: ImageSource.camera, imageQuality: 70);
+
+                        if (image != null)
+                          await APIs.sendChatImage(
+                              widget.user, File(image.path));
+                      },
                       icon: Icon(
                         Icons.camera_alt_rounded,
                         color: Colors.blueAccent,
@@ -298,7 +308,7 @@ class _ChatScreenState extends State<ChatScreen> {
           MaterialButton(
             onPressed: () {
               if (_textController.text.isNotEmpty) {
-                APIs.sendMessage(widget.user, _textController.text);
+                APIs.sendMessage(widget.user, _textController.text, Type.text);
                 _textController.text = "";
               }
             },
