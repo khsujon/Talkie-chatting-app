@@ -72,6 +72,23 @@ class APIs {
     });
   }
 
+  //getting specific user data from firestore
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(
+      ChatUser chatUser) {
+    return firestore
+        .collection('users')
+        .where("id", isEqualTo: chatUser.id)
+        .snapshots();
+  }
+
+  //Update Active Status
+  static Future<void> updateActiveStatus(bool isOnline) async {
+    firestore.collection('users').doc(user.uid).update({
+      'is_online': isOnline,
+      'last_active': DateTime.now().millisecondsSinceEpoch.toString()
+    });
+  }
+
   //update profile picture
   static Future<void> updateProfilePicture(File file) async {
     try {

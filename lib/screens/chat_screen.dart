@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:talkie/api/apis.dart';
+import 'package:talkie/helper/my_date_util.dart';
 import 'package:talkie/models/chat_user.dart';
 import 'package:talkie/widgets/message_card.dart';
 
@@ -170,63 +171,80 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _appBar() {
     return InkWell(
-      onTap: () {},
-      child: Row(
-        children: [
-          //back button
-          IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.black54,
-              )),
+        onTap: () {},
+        child: StreamBuilder(
+          stream: APIs.getUserInfo(widget.user),
+          builder: (context, snapshot) {
+            final data = snapshot.data?.docs;
+            final list =
+                data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
 
-          //user profile picture
-          ClipRRect(
-            borderRadius: BorderRadius.circular(mq.height * 0.3),
-            child: CachedNetworkImage(
-              height: mq.height * 0.05,
-              width: mq.height * 0.05,
-              imageUrl: widget.user.image,
-              //placeholder: (context, url) => CircularProgressIndicator(),
-              errorWidget: (context, url, error) =>
-                  CircleAvatar(child: Icon(CupertinoIcons.person)),
-            ),
-          ),
-          SizedBox(
-            width: 12,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              //user name
-              Text(
-                widget.user.name,
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87),
-              ),
-              SizedBox(
-                height: 2,
-              ),
+            return Row(
+              children: [
+                //back button
+                IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: Colors.black54,
+                    )),
 
-              //last seen status
-              Text(
-                'Last seen unavailable',
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black54),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
+                //user profile picture
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(mq.height * 0.3),
+                  child: CachedNetworkImage(
+                    height: mq.height * 0.05,
+                    width: mq.height * 0.05,
+                    imageUrl:
+                        list.isNotEmpty ? list[0].image : widget.user.image,
+                    //placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        CircleAvatar(child: Icon(CupertinoIcons.person)),
+                  ),
+                ),
+                SizedBox(
+                  width: 12,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //user name
+                    Text(
+                      list.isNotEmpty ? list[0].name : widget.user.name,
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87),
+                    ),
+                    SizedBox(
+                      height: 2,
+                    ),
+
+                    //last seen status
+                    Text(
+                      list.isNotEmpty
+                          ? list[0].isOnline
+                              ? 'Online'
+                              : MyDateUtil.getLastActiveTime(
+                                  context: context,
+                                  lastActive: list[0].lastActive)
+                          : MyDateUtil.getLastActiveTime(
+                              context: context,
+                              lastActive: widget.user.lastActive),
+                      style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black54),
+                    ),
+                  ],
+                )
+              ],
+            );
+          },
+        ));
   }
 
   Widget _chatInput() {
