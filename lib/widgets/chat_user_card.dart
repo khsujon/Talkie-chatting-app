@@ -5,6 +5,7 @@ import 'package:talkie/api/apis.dart';
 import 'package:talkie/helper/my_date_util.dart';
 import 'package:talkie/main.dart';
 import 'package:talkie/models/message.dart';
+import 'package:talkie/widgets/profile_dialog.dart';
 
 import '../models/chat_user.dart';
 import '../screens/chat_screen.dart';
@@ -50,36 +51,45 @@ class _ChatUserCardState extends State<ChatUserCard> {
               return ListTile(
                 //User Profile Picture
                 //leading: CircleAvatar(child: Icon(CupertinoIcons.person)),
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(mq.height * 0.3),
-                  child: CachedNetworkImage(
-                    height: mq.height * 0.055,
-                    width: mq.height * 0.055,
-                    imageUrl: widget.user.image,
-                    //placeholder: (context, url) => CircularProgressIndicator(),
-                    errorWidget: (context, url, error) =>
-                        CircleAvatar(child: Icon(CupertinoIcons.person)),
+                leading: InkWell(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => ProfileDialog(
+                        user: widget.user,
+                      ),
+                    );
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(mq.height * 0.3),
+                    child: CachedNetworkImage(
+                      height: mq.height * 0.055,
+                      width: mq.height * 0.055,
+                      imageUrl: widget.user.image,
+                      //placeholder: (context, url) => CircularProgressIndicator(),
+                      errorWidget: (context, url, error) =>
+                          CircleAvatar(child: Icon(CupertinoIcons.person)),
+                    ),
                   ),
                 ),
 
                 //User Name
-                title: Text(widget.user.name),
+                title: Text(
+                  widget.user.name,
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
 
                 //User last message
                 subtitle: Text(
-                    _message != null
-                        ? _message!.type == Type.image
-                            ? 'Image'
-                            : _message!.msg
-                        : widget.user.about,
-                    maxLines: 1),
+                  _message != null
+                      ? _message!.type == Type.image
+                          ? 'Photo 🖼️'
+                          : _message!.msg
+                      : widget.user.about,
+                  maxLines: 1,
+                  style: TextStyle(color: Colors.black87),
+                ),
 
-                //last message time
-                // trailing: Text(
-                //   '12:00 PM',
-                //   style: TextStyle(
-                //     color: Colors.black45,
-                //   ),
                 trailing: _message == null
                     ? null //show nothing when no message is sent
                     : _message!.read.isEmpty &&

@@ -1,13 +1,6 @@
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:talkie/api/apis.dart';
-import 'package:talkie/auth/login_screen.dart';
-import 'package:talkie/helper/dialogue.dart';
 import 'package:talkie/helper/my_date_util.dart';
 import 'package:talkie/models/chat_user.dart';
 
