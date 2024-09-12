@@ -27,14 +27,24 @@ class APIs {
   }
 
   //for user info
-  static Future getSelfInfo() async {
-    await firestore.collection('users').doc(user.uid).get().then((user) async {
-      if (user.exists) {
-        me = ChatUser.fromJson(user.data()!);
+  static Future<bool> getSelfInfo() async {
+    try {
+      // Get the user's document from Firestore
+      final userDoc = await firestore.collection('users').doc(user.uid).get();
+
+      if (userDoc.exists) {
+        // If the user exists, set the 'me' object and return true
+        me = ChatUser.fromJson(userDoc.data()!);
+        return true;
       } else {
-        await createUser().then((value) => getSelfInfo());
+        // If the user doesn't exist, create the user and return false
+        await createUser();
+        return false;
       }
-    });
+    } catch (e) {
+      log('Error getting user info: $e');
+      return false; // Return false in case of error
+    }
   }
 
 //for creating a new user

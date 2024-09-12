@@ -38,10 +38,15 @@ class _LoginScreenState extends State<LoginScreen> {
       if (user != null) {
         log('\nUser : ${user.user}');
 
-        if ((await APIs.getSelfInfo())) {
+        // Check if user info is already present in Firestore
+        final userExists = await APIs.getSelfInfo();
+
+        if (userExists) {
+          // If user exists, navigate to HomeScreen
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (_) => HomeScreen()));
         } else {
+          // If user is new, create the user and then navigate
           await APIs.createUser().then((value) {
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (_) => HomeScreen()));
