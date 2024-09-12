@@ -166,7 +166,7 @@ class APIs {
           'images/${getConversationId(chatUser.id)}/${DateTime.now().millisecondsSinceEpoch}.$ext');
 
       // Upload the file to Firebase Storage
-      final uploadTask = await ref.putFile(file);
+      await ref.putFile(file);
       log('Image uploaded successfully');
 
       // Retrieve the download URL after the file has been uploaded
