@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:talkie/api/apis.dart';
 import 'package:talkie/helper/my_date_util.dart';
 import 'package:talkie/models/chat_user.dart';
+import 'package:talkie/screens/view_profile_screen.dart';
 import 'package:talkie/widgets/message_card.dart';
 
 import '../main.dart';
@@ -171,7 +172,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _appBar() {
     return InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ViewProfileScreen(user: widget.user),
+              ));
+        },
         child: StreamBuilder(
           stream: APIs.getUserInfo(widget.user),
           builder: (context, snapshot) {
