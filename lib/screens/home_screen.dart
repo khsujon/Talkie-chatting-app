@@ -32,8 +32,17 @@ class _HomeScreenState extends State<HomeScreen> {
     SystemChannels.lifecycle.setMessageHandler((message) {
       log('Message: $message');
       //for update user active status according to lifecycle events
-      if (message.toString().contains('resume')) APIs.updateActiveStatus(true);
-      if (message.toString().contains('pause')) APIs.updateActiveStatus(false);
+      if (APIs.auth.currentUser != null) {
+        if (message.toString().contains('resume')) {
+          APIs.updateActiveStatus(true);
+        }
+        if (message.toString().contains('pause')) {
+          APIs.updateActiveStatus(false);
+        }
+        if (message.toString().contains('inactive')) {
+          APIs.updateActiveStatus(false);
+        }
+      }
 
       return Future.value(message);
     });
