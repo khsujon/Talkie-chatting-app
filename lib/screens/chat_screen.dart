@@ -1,15 +1,13 @@
-import 'dart:convert';
-import 'dart:math';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart'; // <-- Import emoji picker package
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:talkie/api/apis.dart';
 import 'package:talkie/models/chat_user.dart';
 import 'package:talkie/widgets/message_card.dart';
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart'; // <-- Import emoji picker package
 
 import '../main.dart';
 import '../models/message.dart';
@@ -29,8 +27,8 @@ class _ChatScreenState extends State<ChatScreen> {
   //for handling message text changes
   final _textController = TextEditingController();
 
-  //for emoji handling
-  bool _showEmoji = false;
+  //for emoji handling and image upload check
+  bool _showEmoji = false, _isUploading = false;
 
   // Define a focus node to control when the text field has focus
   final FocusNode _focusNode = FocusNode();
@@ -84,6 +82,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
                         if (_list.isNotEmpty) {
                           return (ListView.builder(
+                              reverse: true,
                               padding: EdgeInsets.only(top: mq.height * .01),
                               physics: BouncingScrollPhysics(),
                               itemCount: _list.length,
@@ -105,6 +104,18 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ),
 
+              //Progress indicator for showing image uploading
+              if (_isUploading)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
               // Chat input bar
               _chatInput(),
 
@@ -273,7 +284,22 @@ class _ChatScreenState extends State<ChatScreen> {
 
                   // Image from gallery
                   IconButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        final ImagePicker picker = ImagePicker();
+                        // Pick multiple images image.
+                        final List<XFile> images =
+                            await picker.pickMultiImage(imageQuality: 70);
+
+                        for (var i in images) {
+                          setState(() {
+                            _isUploading = true;
+                          });
+                          await APIs.sendChatImage(widget.user, File(i.path));
+                          setState(() {
+                            _isUploading = false;
+                          });
+                        }
+                      },
                       icon: Icon(
                         Icons.image,
                         color: Colors.blueAccent,

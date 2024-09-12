@@ -111,6 +111,7 @@ class APIs {
       ChatUser user) {
     return firestore
         .collection('chats/${getConversationId(user.id)}/messages/')
+        .orderBy('sent', descending: true)
         .snapshots();
   }
 
@@ -153,25 +154,30 @@ class APIs {
   }
 
   //Send chat image
+  //Send chat image
   static Future sendChatImage(ChatUser chatUser, File file) async {
-    // Get the file extension (e.g., jpg, png)
-    final ext = file.path.split('.').last;
+    try {
+      // Get the file extension (e.g., jpg, png)
+      final ext = file.path.split('.').last;
+      log('File Extension: $ext');
 
-    // Create a reference to the profile_picture directory with the user's UID
-    final ref = storage.ref().child(
-        'images/${getConversationId(chatUser.id)}/${DateTime.now().millisecondsSinceEpoch}.$ext');
+      // Create a reference to the images directory in Firebase Storage
+      final ref = storage.ref().child(
+          'images/${getConversationId(chatUser.id)}/${DateTime.now().millisecondsSinceEpoch}.$ext');
 
-    // Upload the file to Firebase Storage
-    await ref.putFile(file);
+      // Upload the file to Firebase Storage
+      final uploadTask = await ref.putFile(file);
+      log('Image uploaded successfully');
 
-    // Retrieve the download URL after the file has been uploaded
-    final imageUrl = await ref.getDownloadURL();
+      // Retrieve the download URL after the file has been uploaded
+      final imageUrl = await ref.getDownloadURL();
+      log('Image URL: $imageUrl');
 
-    // Update the  image URL in Firestore
-    await sendMessage(chatUser, imageUrl, Type.image);
-
-    // firestore.collection('users').doc(user.uid).update({
-    //   'image': me.image,
-    // });
+      // Send the image URL as a message in Firestore
+      await sendMessage(chatUser, imageUrl, Type.image);
+      log('Image message sent successfully');
+    } catch (e) {
+      log('Error uploading image: $e');
+    }
   }
 }

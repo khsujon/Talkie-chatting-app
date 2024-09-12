@@ -67,7 +67,11 @@ class _ChatUserCardState extends State<ChatUserCard> {
 
                 //User last message
                 subtitle: Text(
-                    _message != null ? _message!.msg : widget.user.about,
+                    _message != null
+                        ? _message!.type == Type.image
+                            ? 'Image'
+                            : _message!.msg
+                        : widget.user.about,
                     maxLines: 1),
 
                 //last message time
