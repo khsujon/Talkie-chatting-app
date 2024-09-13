@@ -41,6 +41,9 @@ dependencies:
 
   #for emoji pick
   emoji_picker_flutter: ^1.0.9
+
+  #for push notification from firebase
+  firebase_messaging: ^14.9.4
  
 
 

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -40,31 +41,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
 
-        //floating button for add user
+        //floating button for logout user
+        // Floating button for logging out the user
         floatingActionButton: Padding(
           padding: const EdgeInsets.only(bottom: 20),
           child: FloatingActionButton.extended(
             backgroundColor: Colors.redAccent.shade100,
             onPressed: () async {
-              //for showing progress dialogue
+              // Show progress dialog
               Dialogs.showProgressBar(context);
-              await APIs.updateActiveStatus(false);
-              //sign out from app
-              await APIs.auth.signOut().then((value) async {
-                await GoogleSignIn().signOut().then((value) {
-                  //hiding progress bar
-                  Navigator.pop(context);
 
-                  //move home screen
-                  Navigator.pop(context);
+              if (APIs.user != null) {
+                await APIs.updateActiveStatus(false);
 
-                  APIs.auth = FirebaseAuth.instance;
+                // Sign out from Firebase and Google
+                await APIs.auth.signOut().then((_) async {
+                  await GoogleSignIn().signOut().then((_) {
+                    // Hide progress bar
+                    Navigator.pop(context);
 
-                  //replace home screen to log in screen
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (_) => LoginScreen()));
+                    // Reset FirebaseAuth instance
+                    APIs.auth = FirebaseAuth.instance;
+
+                    // Navigate to the login screen
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => LoginScreen()),
+                    );
+                  });
                 });
-              });
+              } else {
+                // Handle the case where the user is already logged out
+                log('User is already logged out');
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => LoginScreen()),
+                );
+              }
             },
             icon: Icon(
               Icons.logout,

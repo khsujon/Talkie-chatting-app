@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:talkie/models/chat_user.dart';
 import 'package:talkie/models/message.dart';
@@ -17,9 +18,33 @@ class APIs {
   //for accessing firestore
   static FirebaseStorage storage = FirebaseStorage.instance;
 
+  //for return current user
   static User get user => auth.currentUser!;
 
+  //for storing self info
   static late ChatUser me;
+
+  //for accessing firebase messaging(push notification)
+  static FirebaseMessaging fMessaging = FirebaseMessaging.instance;
+
+  //for getting firebase messaging token
+  static Future<void> getFirebaseMessagingToken() async {
+    await fMessaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+    fMessaging.getToken().then((t) {
+      if (t != null) {
+        me.pushToken = t;
+        log('Push token: $t');
+      }
+    });
+  }
 
 //for checking if user exists or not?
   static Future<bool> userExists() async {
@@ -35,6 +60,10 @@ class APIs {
       if (userDoc.exists) {
         // If the user exists, set the 'me' object and return true
         me = ChatUser.fromJson(userDoc.data()!);
+        await getFirebaseMessagingToken();
+
+        //set user active status to active
+        APIs.updateActiveStatus(true);
         return true;
       } else {
         // If the user doesn't exist, create the user and return false
@@ -95,7 +124,8 @@ class APIs {
   static Future<void> updateActiveStatus(bool isOnline) async {
     firestore.collection('users').doc(user.uid).update({
       'is_online': isOnline,
-      'last_active': DateTime.now().millisecondsSinceEpoch.toString()
+      'last_active': DateTime.now().millisecondsSinceEpoch.toString(),
+      'push_token': me.pushToken,
     });
   }
 
