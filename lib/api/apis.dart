@@ -268,7 +268,6 @@ class APIs {
   }
 
   //Send chat image
-  //Send chat image
   static Future sendChatImage(ChatUser chatUser, File file) async {
     try {
       // Get the file extension (e.g., jpg, png)
@@ -292,6 +291,17 @@ class APIs {
       log('Image message sent successfully');
     } catch (e) {
       log('Error uploading image: $e');
+    }
+  }
+
+  //delete message
+  static Future<void> deleteMessage(Message message) async {
+    await firestore
+        .collection('chats/${getConversationId(message.toId)}/messages/')
+        .doc(message.sent)
+        .delete();
+    if (message.type == Type.image) {
+      await storage.refFromURL(message.msg).delete();
     }
   }
 }

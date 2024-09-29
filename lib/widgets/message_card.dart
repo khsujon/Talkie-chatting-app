@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:talkie/api/apis.dart';
+import 'package:talkie/helper/dialogue.dart';
 import 'package:talkie/helper/my_date_util.dart';
 import 'package:talkie/main.dart';
 import 'package:talkie/models/message.dart';
@@ -194,7 +196,15 @@ class _MessageCardState extends State<MessageCard> {
                         color: Colors.blue,
                       ),
                       name: 'Copy Text',
-                      onTap: () {})
+                      onTap: () async {
+                        await Clipboard.setData(
+                                ClipboardData(text: widget.message.msg))
+                            .then((value) {
+                          Navigator.pop(context);
+
+                          Dialogs.showsnackbar(context, 'Text Copied');
+                        });
+                      })
                   :
                   //Save Image
                   _optionItem(
@@ -234,7 +244,12 @@ class _MessageCardState extends State<MessageCard> {
                       color: Colors.red,
                     ),
                     name: 'Delete Message',
-                    onTap: () {}),
+                    onTap: () async {
+                      await APIs.deleteMessage(widget.message).then((value) {
+                        Navigator.pop(_);
+                        Dialogs.showsnackbar(context, 'Message Deleted');
+                      });
+                    }),
 
               //divider
               Divider(
@@ -249,7 +264,8 @@ class _MessageCardState extends State<MessageCard> {
                     Icons.send,
                     color: Colors.blue,
                   ),
-                  name: 'Sent At',
+                  name:
+                      'Sent At: ${MyDateUtil.getMessageTime(context: context, time: widget.message.sent)}',
                   onTap: () {}),
 
               //read time
@@ -258,7 +274,9 @@ class _MessageCardState extends State<MessageCard> {
                     Icons.remove_red_eye,
                     color: Colors.green,
                   ),
-                  name: 'Read At',
+                  name: widget.message.read.isEmpty
+                      ? 'Read At: Not Seen Yet'
+                      : 'Read At: ${MyDateUtil.getMessageTime(context: context, time: widget.message.read)}',
                   onTap: () {}),
             ],
           );

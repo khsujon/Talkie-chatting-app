@@ -13,7 +13,7 @@ class GetServerKey {
     // Load the service account credentials from a JSON file or map
     final client = await clientViaServiceAccount(
       ServiceAccountCredentials.fromJson({
-        //your server key
+        //your server file
       }),
       scopes,
     );
