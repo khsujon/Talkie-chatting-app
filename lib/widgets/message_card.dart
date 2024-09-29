@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:talkie/api/apis.dart';
 import 'package:talkie/helper/dialogue.dart';
 import 'package:talkie/helper/my_date_util.dart';
@@ -214,7 +217,20 @@ class _MessageCardState extends State<MessageCard> {
                         color: Colors.blue,
                       ),
                       name: 'Save Image',
-                      onTap: () {}),
+                      onTap: () async {
+                        try {
+                          await GallerySaver.saveImage(widget.message.msg,
+                                  albumName: 'Talkie')
+                              .then((success) {
+                            Navigator.pop(context);
+                            if (success != null && success) {
+                              Dialogs.showsnackbar(context, 'Image Saved');
+                            }
+                          });
+                        } catch (e) {
+                          log('Error while saving image: $e');
+                        }
+                      }),
 
               if (isMe)
                 //divider
