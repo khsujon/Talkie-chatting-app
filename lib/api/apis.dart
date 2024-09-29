@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -5,8 +6,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:talkie/api/get_server_key.dart';
 import 'package:talkie/models/chat_user.dart';
 import 'package:talkie/models/message.dart';
+import 'package:http/http.dart' as http;
 
 class APIs {
   //for authentication
@@ -46,6 +49,54 @@ class APIs {
     });
   }
 
+  //Server key
+  static Future<String> getAccessToken() async {
+    GetServerKey getServerKey = GetServerKey();
+    return await getServerKey
+        .getServerKeyToken(); // This will fetch the token using the method you wrote earlier
+  }
+
+  //to send push notification
+  static Future<void> sendPushNotification(
+      ChatUser chatUser, String msg) async {
+    try {
+      final accessToken = await getAccessToken(); // Fetch the OAuth token
+
+      final body = {
+        "message": {
+          "token": chatUser.pushToken, // Use device token here
+          "notification": {
+            "title": chatUser.name,
+            "body": msg,
+          },
+        }
+      };
+
+      final url =
+          'https://fcm.googleapis.com/v1/projects/talkie-a355f/messages:send';
+
+      final res = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization':
+              'Bearer $accessToken', // Use OAuth token instead of API key
+        },
+        body: jsonEncode(body),
+      );
+
+      if (res.statusCode == 200) {
+        log('Response status: ${res.statusCode}');
+        log('Response body: ${res.body}');
+      } else {
+        log('Failed to send notification: ${res.statusCode}');
+        log('Error: ${res.body}');
+      }
+    } catch (e) {
+      log('\nsendPushNotification Error: $e');
+    }
+  }
+
 //for checking if user exists or not?
   static Future<bool> userExists() async {
     return (await firestore.collection('users').doc(user.uid).get()).exists;
@@ -61,6 +112,11 @@ class APIs {
         // If the user exists, set the 'me' object and return true
         me = ChatUser.fromJson(userDoc.data()!);
         await getFirebaseMessagingToken();
+
+        //serverkey
+        // GetServerKey getServerKey = GetServerKey();
+        // String accessToken = await getServerKey.getServerKeyToken();
+        // print(accessToken);
 
         //set user active status to active
         APIs.updateActiveStatus(true);
@@ -189,7 +245,8 @@ class APIs {
     final ref = firestore
         .collection('chats/${getConversationId(chatUser.id)}/messages/');
 
-    await ref.doc(time).set(message.toJson());
+    await ref.doc(time).set(message.toJson()).then((value) =>
+        sendPushNotification(chatUser, type == Type.text ? msg : 'image'));
   }
 
   //update read status of message

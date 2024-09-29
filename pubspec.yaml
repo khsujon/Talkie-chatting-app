@@ -44,6 +44,8 @@ dependencies:
 
   #for push notification from firebase
   firebase_messaging: ^14.9.4
+  googleapis_auth: 
+  http:
  
 
 
