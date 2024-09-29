@@ -17,9 +17,12 @@ class MessageCard extends StatefulWidget {
 class _MessageCardState extends State<MessageCard> {
   @override
   Widget build(BuildContext context) {
-    return APIs.user.uid == widget.message.fromId
-        ? _greenMessage()
-        : _blueMessage();
+    bool isMe = APIs.user.uid == widget.message.fromId;
+    return InkWell(
+        onLongPress: () {
+          _showBottomSheet(isMe);
+        },
+        child: isMe ? _greenMessage() : _blueMessage());
   }
 
   //sender message
@@ -158,6 +161,142 @@ class _MessageCardState extends State<MessageCard> {
           ),
         ),
       ],
+    );
+  }
+
+//bottom sheet for modifying message details
+  void _showBottomSheet(bool isMe) {
+    showModalBottomSheet(
+        context: context,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        builder: (_) {
+          return ListView(
+            shrinkWrap: true,
+            children: [
+              //divider
+              Container(
+                height: 4,
+                margin: EdgeInsets.symmetric(
+                    vertical: mq.height * 0.015, horizontal: mq.width * 0.4),
+                decoration: BoxDecoration(
+                    color: Colors.grey, borderRadius: BorderRadius.circular(8)),
+              ),
+
+              widget.message.type == Type.text
+                  ?
+                  //copy option
+                  _optionItem(
+                      icon: Icon(
+                        Icons.copy_all_rounded,
+                        size: 26,
+                        color: Colors.blue,
+                      ),
+                      name: 'Copy Text',
+                      onTap: () {})
+                  :
+                  //Save Image
+                  _optionItem(
+                      icon: Icon(
+                        Icons.download_rounded,
+                        size: 26,
+                        color: Colors.blue,
+                      ),
+                      name: 'Save Image',
+                      onTap: () {}),
+
+              if (isMe)
+                //divider
+                Divider(
+                  color: Colors.black45,
+                  endIndent: mq.width * 0.04,
+                  indent: mq.width * 0.04,
+                ),
+
+              if (widget.message.type == Type.text && isMe)
+                //edit option
+                _optionItem(
+                    icon: Icon(
+                      Icons.edit,
+                      size: 26,
+                      color: Colors.blue,
+                    ),
+                    name: 'Edit Message',
+                    onTap: () {}),
+
+              if (isMe)
+                //delete option
+                _optionItem(
+                    icon: Icon(
+                      Icons.delete_forever,
+                      size: 26,
+                      color: Colors.red,
+                    ),
+                    name: 'Delete Message',
+                    onTap: () {}),
+
+              //divider
+              Divider(
+                color: Colors.black45,
+                endIndent: mq.width * 0.04,
+                indent: mq.width * 0.04,
+              ),
+
+              //sent time
+              _optionItem(
+                  icon: Icon(
+                    Icons.send,
+                    color: Colors.blue,
+                  ),
+                  name: 'Sent At',
+                  onTap: () {}),
+
+              //read time
+              _optionItem(
+                  icon: Icon(
+                    Icons.remove_red_eye,
+                    color: Colors.green,
+                  ),
+                  name: 'Read At',
+                  onTap: () {}),
+            ],
+          );
+        });
+  }
+}
+
+class _optionItem extends StatelessWidget {
+  final Icon icon;
+  final String name;
+  final VoidCallback onTap;
+  const _optionItem(
+      {required this.icon, required this.name, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => onTap(),
+      child: Padding(
+        padding: EdgeInsets.only(
+            left: mq.width * 0.05,
+            top: mq.height * 0.015,
+            bottom: mq.height * 0.015),
+        child: Row(
+          children: [
+            icon,
+            Flexible(
+                child: Text(
+              '    $name',
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.black54,
+                letterSpacing: 0.5,
+              ),
+            ))
+          ],
+        ),
+      ),
     );
   }
 }
