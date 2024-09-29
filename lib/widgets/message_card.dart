@@ -249,7 +249,10 @@ class _MessageCardState extends State<MessageCard> {
                       color: Colors.blue,
                     ),
                     name: 'Edit Message',
-                    onTap: () {}),
+                    onTap: () {
+                      Navigator.pop(_);
+                      _showMessageUpdteDialog();
+                    }),
 
               if (isMe)
                 //delete option
@@ -297,6 +300,59 @@ class _MessageCardState extends State<MessageCard> {
             ],
           );
         });
+  }
+
+  void _showMessageUpdteDialog() {
+    String UpdatedMsg = widget.message.msg;
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        contentPadding:
+            EdgeInsets.only(left: 24, right: 24, top: 20, bottom: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(
+              Icons.message,
+              size: 20,
+              color: Colors.blue,
+            ),
+            Text('  Edit Message',
+                style: TextStyle(color: Colors.black, fontSize: 18)),
+          ],
+        ),
+        content: TextFormField(
+          initialValue: UpdatedMsg,
+          maxLines: null,
+          onChanged: (value) => UpdatedMsg = value,
+          decoration: InputDecoration(
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
+        ),
+        actions: [
+          MaterialButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.blue, fontSize: 16),
+            ),
+          ),
+          MaterialButton(
+            onPressed: () {
+              APIs.updateMessage(widget.message, UpdatedMsg);
+              Navigator.pop(context);
+            },
+            child: Text(
+              'Update',
+              style: TextStyle(color: Colors.blue, fontSize: 16),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
